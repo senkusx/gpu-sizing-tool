@@ -1,0 +1,126 @@
+/* Rack elevation page — layout chrome only.
+   Device colours live in rack.js and are deliberately fixed rather than themed:
+   a rack stencil should look the same on paper as on screen. */
+
+.rack-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px 18px;
+  padding: 8px 16px;
+  background: var(--page);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: var(--topbar-h);
+  z-index: 15;
+}
+.ctl { display: flex; flex-direction: column; gap: 3px; }
+.ctl > label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+.ctl select { min-width: 150px; }
+.check-ctl { flex-direction: row; gap: 14px; align-items: center; padding-bottom: 4px; }
+/* Checkbox captions are content, not section labels — they opt out of the
+   uppercase treatment `.ctl > label` gives the field labels beside them. */
+.check-ctl .check {
+  font-size: 11.5px;
+  white-space: nowrap;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+.ctl-summary {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--text-muted);
+  text-align: right;
+  line-height: 1.5;
+  padding-bottom: 2px;
+}
+.ctl-summary b { color: var(--text-primary); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.rack-main {
+  padding: 16px;
+  max-width: 1560px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.rack-section > h2 {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin: 0 0 3px;
+  font-weight: 600;
+}
+.rack-section > .sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin: 0 0 12px;
+}
+
+.rack-row {
+  display: flex;
+  gap: 28px;
+  align-items: flex-start;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+.rack-unit { flex: none; }
+.rack-unit .rack-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 7px;
+  text-align: center;
+  letter-spacing: -0.01em;
+}
+
+.rack-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 20px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+.rack-legend .legend-item { display: flex; align-items: center; gap: 7px; font-size: 11px; color: var(--text-muted); }
+.rack-legend .line { width: 20px; height: 2px; flex: none; }
+
+.rack-note {
+  font-size: 10.5px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-top: 10px;
+  max-width: 90ch;
+}
+
+.empty-state {
+  padding: 40px 16px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 12px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+}
+
+@media print {
+  .rack-controls, .topbar-actions { display: none; }
+  body { background: #fff; }
+  .rack-main { padding: 0; max-width: none; gap: 18px; }
+  /* Racks are drawn at a fixed width, so on paper they wrap onto more rows
+     rather than running off the right edge, and each one stays whole. */
+  .rack-row { overflow: visible; flex-wrap: wrap; gap: 20px; }
+  .rack-unit { break-inside: avoid; max-width: 100%; }
+  .rack-unit .rack-svg { width: auto; height: auto; max-width: 100%; max-height: 930px; }
+  .rack-section { break-inside: auto; }
+  .rack-section > h2 { break-after: avoid; }
+}

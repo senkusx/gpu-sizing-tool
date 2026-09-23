@@ -1,0 +1,222 @@
+/* Guided sizing journey — stepper, step layout and bottom navigation. */
+
+.stepper {
+  display: flex;
+  gap: 0;
+  padding: 0 16px;
+  background: var(--page);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: var(--topbar-h);
+  z-index: 15;
+  overflow-x: auto;
+}
+.stepper button {
+  border: none;
+  border-radius: 0;
+  background: none;
+  padding: 8px 14px;
+  border-bottom: 1px solid transparent;
+  margin-bottom: -1px;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.stepper button:hover { background: var(--surface); color: var(--text-primary); }
+.stepper button.active { color: var(--text-primary); border-bottom-color: var(--text-primary); font-weight: 600; }
+.stepper button.done { color: var(--text-secondary); }
+
+/* A step the current configuration skips over. It keeps its place in the
+   sequence — so the journey does not appear to renumber itself — but reads as
+   plainly unavailable and does not respond to a click. */
+.stepper button.skipped,
+.stepper button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+.stepper button.skipped:hover,
+.stepper button:disabled:hover { background: none; color: var(--text-muted); }
+.stepper .num {
+  width: 16px; height: 16px;
+  border-radius: var(--radius);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 9.5px; font-weight: 600;
+  background: transparent; color: var(--text-muted);
+  border: 1px solid var(--border);
+  flex: none;
+}
+.stepper button.active .num { background: var(--text-primary); color: var(--page); border-color: var(--text-primary); }
+.stepper button.done .num { color: var(--good); border-color: color-mix(in srgb, var(--good) 55%, var(--border)); }
+
+.wizard { max-width: 1560px; margin: 0 auto; padding: 16px 16px 84px; }
+
+.step-head { margin-bottom: 14px; }
+.step-head h2 { font-size: 16px; font-weight: 700; margin: 0 0 4px; letter-spacing: -0.03em; }
+.step-head p { margin: 0; font-size: 11.5px; color: var(--text-muted); max-width: 88ch; line-height: 1.55; }
+
+.step-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 14px;
+  align-items: start;
+}
+.step-grid .card { display: flex; flex-direction: column; gap: 10px; }
+
+.step-live { margin-top: 14px; }
+.step-live .tiles { margin-bottom: 0; }
+
+.wizard-nav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 16px;
+  background: var(--page);
+  border-top: 1px solid var(--border);
+  z-index: 20;
+}
+.wizard-nav .wizard-pos { margin-left: auto; margin-right: auto; font-size: 11px; color: var(--text-muted); }
+.wizard-nav button { min-width: 96px; }
+.wizard-nav button:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* Racks stand side by side in one scrolling row rather than wrapping — a 48U
+   elevation is taller than a screen, so wrapping stacked them into a column
+   the reader had to scroll through one rack at a time. The overview above
+   shows every rack at once and doubles as the row's navigation. */
+.ra-rack-row {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 26px 30px;
+  padding-bottom: 12px;
+  align-items: flex-start;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scroll-padding-inline: 8px;
+}
+.ra-rack-unit { flex: none; scroll-snap-align: start; }
+
+.ra-overview { overflow-x: auto; padding: 6px 0 2px; }
+.ra-overview svg { display: block; }
+.ra-ov-group:hover rect:first-child { stroke: var(--accent); stroke-width: 1.5; }
+.ra-legend { margin: 6px 0 14px; }
+.ra-line {
+  display: inline-block; width: 18px; height: 0; flex: none;
+  border-top: 2px solid var(--c);
+}
+.ra-line.dashed { border-top-style: dashed; }
+.view-hint { font-size: 11px; color: var(--text-muted); margin-left: 8px; flex: 1 1 320px; line-height: 1.5; }
+.ra-topology { overflow-x: auto; padding: 4px 0 8px; }
+.ra-topology svg { display: block; width: 100%; max-width: 1100px; height: auto; }
+.ra-rack-unit .ra-name {
+  font-size: 11px; font-weight: 600; text-align: center;
+  margin-bottom: 6px; color: var(--text-primary); letter-spacing: -0.01em;
+}
+.ra-rack-unit .ra-sub { font-size: 10.5px; color: var(--text-muted); text-align: center; margin-bottom: 7px; }
+
+.view-toggle { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; align-items: center; }
+.view-toggle button { font-size: 11px; padding: 4px 9px; }
+.view-toggle button.on {
+  background: var(--text-primary);
+  color: var(--page);
+  border-color: var(--text-primary);
+  font-weight: 600;
+}
+
+@media print {
+  .stepper, .wizard-nav, .topbar-actions, .view-toggle { display: none; }
+  .wizard { padding: 0; max-width: none; }
+  .step-head { margin-bottom: 10px; }
+  .step-grid { gap: 12px; }
+
+  /* Rack elevations wrap onto as many rows as they need, and a rack is never
+     sliced across a page boundary. */
+  .ra-rack-row { overflow: visible; flex-wrap: wrap; gap: 18px 22px; }
+  /* A rack drawn at screen scale stands taller than a printed page, so it was
+     being sliced at the page break with the remainder left on a near-empty
+     following page. The drawing carries a viewBox, so capping its height
+     scales the whole elevation down to land whole on one page. */
+  .ra-rack-unit { break-inside: avoid; max-width: 100%; }
+  .ra-rack-unit .ra-svg { width: auto; height: auto; max-width: 100%; max-height: 930px; }
+
+  .stackbar, .stackbar > * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  #results .card { margin-bottom: 12px; }
+  .two-col { gap: 12px; }
+}
+
+/* Shared card internals for the results page. */
+.stackbar {
+  display: flex;
+  height: 22px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  margin-bottom: 10px;
+}
+.two-col { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+.pill {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 600;
+  padding: 0 5px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-left: 6px;
+  vertical-align: 1px;
+}
+#results .card { margin-bottom: 14px; }
+
+/* Design checks and the networking-step notice: one row per finding, the
+   level carried by a coloured left edge so the list reads at a glance. */
+.check-item {
+  display: block;
+  padding: 7px 10px;
+  margin: 0 0 6px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--border-strong);
+  background: var(--page);
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+.check-item.critical { border-left-color: var(--critical); }
+.check-item.warning { border-left-color: var(--warning); }
+.check-item.info { border-left-color: var(--info); }
+.check-item.good { border-left-color: var(--good); }
+.field + .check-item, .check-item + .field { margin-top: 8px; }
+
+/* ---------- platform step ----------
+   A quantity and a part are one decision ("four 7.68 TB drives"), so they sit
+   on one row with the quantity kept narrow and the part taking the rest. */
+.spec-row { display: flex; gap: 6px; align-items: center; }
+.spec-row .spec-qty { flex: 0 0 68px; }
+.spec-row select:last-child { flex: 1 1 auto; min-width: 0; }
+
+/* The two read-only tables on a card: what the build works out to, and what it
+   presents to each network. Both are dense and secondary to the controls. */
+.spec-sum, .spec-net { width: 100%; border-collapse: collapse; font-size: 11px; }
+.spec-sum td, .spec-net td { padding: 3px 0; border-bottom: 1px solid var(--border); color: var(--text-secondary); }
+.spec-sum tr:last-child td, .spec-net tr:last-child td { border-bottom: none; }
+.spec-net td:first-child { color: var(--text-muted); width: 38%; }
+.spec-net td:last-child, .spec-sum td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* The guideline a card is checked against, collapsed so the quotation is
+   available without crowding the control it justifies. */
+.spec-src { font-size: 10.5px; color: var(--text-muted); line-height: 1.5; }
+.spec-src summary { cursor: pointer; color: var(--text-secondary); font-weight: 500; }
+.spec-src summary:hover { color: var(--text-primary); }
+.spec-src a { color: var(--accent); }
+
+#spec-cards .card h2 { display: flex; align-items: center; flex-wrap: wrap; }
